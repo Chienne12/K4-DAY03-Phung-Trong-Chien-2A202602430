@@ -1,29 +1,287 @@
 [
   {
     "step": 1,
-    "query": "Chào bạn, bạn có thể giới thiệu quy chế học vụ cơ bản của Đại học VinUni không?",
+    "query": "Khi thuê phòng trọ, sinh viên nên dự trù những khoản chi phí nào ngoài tiền thuê?",
     "action_type": "FINAL_ANSWER",
-    "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool.",
-    "output": "[Mock Agent Response]: Xin chào! Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
-    "latency_ms": 2845.93
+    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "Ngoài tiền thuê phòng, sinh viên nên dự trù các khoản chi phí sau: tiền điện, tiền nước, tiền internet, chi phí đi lại, ăn uống,, và các chi phí sinh hoạt cá nhân khác.",
+    "latency_ms": 3502.2
   },
   {
     "step": 1,
-    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
+    "query": "Tìm phòng riêng có tổng chi phí dưới 4 triệu đồng mỗi tháng, cách VinUni tối đa 7 km và cần chỗ để xe.",
     "action_type": "TOOL_EXECUTION",
-    "tool_name": "academic_query",
+    "thought": "Gemini quyết định gọi công cụ 'search_student_housing' với tham số: {\"max_monthly_budget\": 4000000, \"max_distance_km\": 7, \"require_parking\": true, \"room_type\": \"private_room\"}",
+    "tool_name": "search_student_housing",
     "arguments": {
-      "student_id": "SV2026001"
+      "max_monthly_budget": 4000000,
+      "max_distance_km": 7,
+      "require_parking": true,
+      "room_type": "private_room"
     },
-    "observation": {},
-    "latency_ms": 799.12
+    "observation": {
+      "status": "SUCCESS",
+      "total_matches": 6,
+      "properties": [
+        {
+          "property_id": "ROOM-008",
+          "address": "Thôn Lê Xá, Xã Đa Tốn, Gia Lâm, Hà Nội",
+          "room_type": "private_room",
+          "monthly_rent": 1500000,
+          "electricity_cost": 250000,
+          "water_cost": 80000,
+          "internet_cost": 80000,
+          "service_fee": 40000,
+          "has_parking": true,
+          "transport_cost": 100000,
+          "deposit_months": 1,
+          "distance_km": 2.2,
+          "availability": "LIMITED",
+          "available_from": null,
+          "last_updated": "2024-03-26",
+          "total_monthly_cost": 2050000,
+          "source_listing_url": "https://phongtro123.com/con-1-phong-tro-cho-thue-tai-le-xa-gia-lam-co-dh-nl-gia-chi-1-5-trieu-thang-pr650352.html",
+          "thumbnail_url": null,
+          "collected_at": "2026-09-13T15:30:00+07:00",
+          "estimated_fields": [
+            "electricity_cost",
+            "water_cost",
+            "internet_cost",
+            "service_fee",
+            "transport_cost"
+          ]
+        },
+        {
+          "property_id": "ROOM-010",
+          "address": "Ngách 24/40 Ngọc Động, Xã Đa Tốn, Gia Lâm, Hà Nội",
+          "room_type": "private_room",
+          "monthly_rent": 1500000,
+          "electricity_cost": 250000,
+          "water_cost": 80000,
+          "internet_cost": 80000,
+          "service_fee": 40000,
+          "has_parking": true,
+          "transport_cost": 100000,
+          "deposit_months": 1,
+          "distance_km": 2.6,
+          "availability": "AVAILABLE",
+          "available_from": null,
+          "last_updated": "2024-03-19",
+          "total_monthly_cost": 2050000,
+          "source_listing_url": "https://phongtro123.com/phong-tro-khep-kin-ngoc-dong-da-ton-dt-rong-rai-gia-chi-1-5-trieu-thang-pr649529.html",
+          "thumbnail_url": "https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2024/03/19/cho-thue-phong-tro-gan-vinhomes-ocean-park-gia-lam-1_1710830983.jpg",
+          "collected_at": "2026-09-13T15:30:00+07:00",
+          "estimated_fields": [
+            "electricity_cost",
+            "water_cost",
+            "internet_cost",
+            "service_fee",
+            "transport_cost"
+          ]
+        },
+        {
+          "property_id": "ROOM-015",
+          "address": "Ngõ 68 Đường Ỷ Lan, Xã Phú Thị, Gia Lâm, Hà Nội",
+          "room_type": "private_room",
+          "monthly_rent": 1500000,
+          "electricity_cost": 250000,
+          "water_cost": 80000,
+          "internet_cost": 80000,
+          "service_fee": 40000,
+          "has_parking": true,
+          "transport_cost": 200000,
+          "deposit_months": 1,
+          "distance_km": 6.2,
+          "availability": "AVAILABLE",
+          "available_from": null,
+          "last_updated": "2025-03-25",
+          "total_monthly_cost": 2150000,
+          "source_listing_url": "https://phongtro123.com/chinh-chu-cho-thue-phong-tu-10-15m2-trong-nha-3-tang-pr677677.html",
+          "thumbnail_url": "https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2025/03/25/z6440003013782-91a6ef7a0708f7b16fb4623c0b19e467_1742877399.jpg",
+          "collected_at": "2026-09-13T15:30:00+07:00",
+          "estimated_fields": [
+            "electricity_cost",
+            "water_cost",
+            "internet_cost",
+            "service_fee",
+            "transport_cost"
+          ]
+        },
+        {
+          "property_id": "ROOM-002",
+          "address": "Đường Cửu Việt, Thị trấn Trâu Quỳ, Gia Lâm, Hà Nội",
+          "room_type": "private_room",
+          "monthly_rent": 2000000,
+          "electricity_cost": 300000,
+          "water_cost": 80000,
+          "internet_cost": 100000,
+          "service_fee": 50000,
+          "has_parking": true,
+          "transport_cost": 120000,
+          "deposit_months": 1,
+          "distance_km": 3.2,
+          "availability": "AVAILABLE",
+          "available_from": null,
+          "last_updated": "2025-01-12",
+          "total_monthly_cost": 2650000,
+          "source_listing_url": "https://phongtro123.com/cho-thue-phong-tro-20m2-gan-hoc-vien-nong-nghiep-gia-2tr-pr673528.html",
+          "thumbnail_url": null,
+          "collected_at": "2026-09-13T15:30:00+07:00",
+          "estimated_fields": [
+            "electricity_cost",
+            "water_cost",
+            "internet_cost",
+            "service_fee",
+            "transport_cost"
+          ]
+        },
+        {
+          "property_id": "ROOM-013",
+          "address": "Thị trấn Trâu Quỳ, Gia Lâm, Hà Nội",
+          "room_type": "private_room",
+          "monthly_rent": 2500000,
+          "electricity_cost": 300000,
+          "water_cost": 80000,
+          "internet_cost": 80000,
+          "service_fee": 50000,
+          "has_parking": true,
+          "transport_cost": 120000,
+          "deposit_months": 1,
+          "distance_km": 3.2,
+          "availability": "LIMITED",
+          "available_from": null,
+          "last_updated": "2024-03-11",
+          "total_monthly_cost": 3130000,
+          "source_listing_url": "https://phongtro123.com/con-3-phong-tro-trau-quy-gia-lam-dt-30m2-gan-hoc-vien-nong-nghiep-gia-2-5-trieu-thang-pr648571.html",
+          "thumbnail_url": "https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2024/03/11/cho-thue-phong-tro-trau-quy-gia-lam-ha-noi-1_1710128812.jpg",
+          "collected_at": "2026-09-13T15:30:00+07:00",
+          "estimated_fields": [
+            "electricity_cost",
+            "water_cost",
+            "internet_cost",
+            "service_fee",
+            "transport_cost"
+          ]
+        },
+        {
+          "property_id": "ROOM-016",
+          "address": "Ngõ 6 Đường Bát Khối, Xã Bát Tràng, Gia Lâm, Hà Nội",
+          "room_type": "private_room",
+          "monthly_rent": 2500000,
+          "electricity_cost": 300000,
+          "water_cost": 80000,
+          "internet_cost": 80000,
+          "service_fee": 50000,
+          "has_parking": true,
+          "transport_cost": 180000,
+          "deposit_months": 1,
+          "distance_km": 5.5,
+          "availability": "AVAILABLE",
+          "available_from": null,
+          "last_updated": "2026-07-04",
+          "total_monthly_cost": 3190000,
+          "source_listing_url": "https://phongtro123.com/cho-thue-phong-tro-dong-du-ha-gan-bat-trang-va-vinhome-ocean-park-1-pr673544.html",
+          "thumbnail_url": "https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2025/01/15/img-5290_1736948231.jpg",
+          "collected_at": "2026-09-13T15:30:00+07:00",
+          "estimated_fields": [
+            "electricity_cost",
+            "water_cost",
+            "internet_cost",
+            "service_fee",
+            "transport_cost"
+          ]
+        }
+      ]
+    },
+    "latency_ms": 2456.08
   },
   {
     "step": 2,
-    "query": "Hãy tra cứu thông tin học vụ của sinh viên SV2026001.",
+    "query": "Tìm phòng riêng có tổng chi phí dưới 4 triệu đồng mỗi tháng, cách VinUni tối đa 7 km và cần chỗ để xe.",
     "action_type": "FINAL_ANSWER",
-    "thought": "Tổng hợp kết quả từ MCP Server thành công.",
-    "output": "Chưa thể trả lời chi tiết do chưa nhận được dữ liệu từ MCP Server (hãy hoàn thành TODO 2.1).",
-    "latency_ms": 10.0
+    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "Tôi đã tìm thấy 6 phòng riêng phù hợp với yêu cầu của bạn:\n\n*   **ROOM-008**: Thôn Lê Xá, Xã Đa Tốn, Gia Lâm, Hà Nội. Tổng chi phí: 2.050.000 VND/tháng. Cách VinUni: 2.2 km. Tình trạng: CÒN ÍT.\n*   **ROOM-010**: Ngách 24/40 Ngọc Động, Xã Đa Tốn, Gia Lâm, Hà Nội. Tổng chi phí: 2.050.000 VND/tháng. Cách VinUni: 2.6 km. Tình trạng: CÒN PHÒNG.\n*   **ROOM-015**: Ngõ 68 Đường Ỷ Lan, Xã Phú Thị, Gia Lâm, Hà Nội. Tổng chi phí: 2.150.000 VND/tháng. Cách VinUni: 6.2 km. Tình trạng: CÒN PHÒNG.\n*   **ROOM-002**: Đường Cửu Việt, Thị trấn Trâu Quỳ, Gia Lâm, Hà Nội. Tổng chi phí: 2.650.000 VND/tháng. Cách VinUni: 3.2 km. Tình trạng: CÒN PHÒNG.\n*   **ROOM-013**: Thị trấn Trâu Quỳ, Gia Lâm, Hà Nội. Tổng chi phí: 3.130.000 VND/tháng. Cách VinUni: 3.2 km. Tình trạng: CÒN ÍT.\n*   **ROOM-016**: Ngõ 6 Đường Bát Khối, Xã Bát Tràng, Gia Lâm, Hà Nội. Tổng chi phí: 3.190.000 VND/tháng. Cách VinUni: 5.5 km. Tình trạng: CÒN PHÒNG.\n\nBạn có muốn đặt lịch xem phòng nào không?",
+    "latency_ms": 4218.87
+  },
+  {
+    "step": 1,
+    "query": "Đặt lịch xem ROOM-002 cho sinh viên SV2026001 vào 2026-09-20T15:00:00.",
+    "action_type": "TOOL_EXECUTION",
+    "thought": "Gemini quyết định gọi công cụ 'schedule_room_viewing' với tham số: {\"viewing_datetime\": \"2026-09-20T15:00:00\", \"student_id\": \"SV2026001\", \"property_id\": \"ROOM-002\"}",
+    "tool_name": "schedule_room_viewing",
+    "arguments": {
+      "viewing_datetime": "2026-09-20T15:00:00",
+      "student_id": "SV2026001",
+      "property_id": "ROOM-002"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "booking_id": "VIEW-SV2026001-ROOM-002",
+      "student_id": "SV2026001",
+      "property_id": "ROOM-002",
+      "viewing_datetime": "2026-09-20T15:00:00",
+      "message": "Đã đặt lịch xem phòng ROOM-002 cho sinh viên SV2026001 vào 2026-09-20T15:00:00."
+    },
+    "latency_ms": 2226.97
+  },
+  {
+    "step": 2,
+    "query": "Đặt lịch xem ROOM-002 cho sinh viên SV2026001 vào 2026-09-20T15:00:00.",
+    "action_type": "FINAL_ANSWER",
+    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "Đã đặt lịch xem phòng ROOM-002 cho sinh viên SV2026001 vào 2026-09-20T15:00:00. Mã đặt lịch của bạn là VIEW-SV2026001-ROOM-002.",
+    "latency_ms": 2358.96
+  },
+  {
+    "step": 1,
+    "query": "Tìm studio có tổng chi phí dưới 2 triệu đồng mỗi tháng, cách VinUni tối đa 2 km và cần chỗ để xe.",
+    "action_type": "TOOL_EXECUTION",
+    "thought": "Gemini quyết định gọi công cụ 'search_student_housing' với tham số: {\"require_parking\": true, \"max_monthly_budget\": 2000000, \"max_distance_km\": 2, \"room_type\": \"studio\"}",
+    "tool_name": "search_student_housing",
+    "arguments": {
+      "require_parking": true,
+      "max_monthly_budget": 2000000,
+      "max_distance_km": 2,
+      "room_type": "studio"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "total_matches": 0,
+      "properties": []
+    },
+    "latency_ms": 2457.5
+  },
+  {
+    "step": 2,
+    "query": "Tìm studio có tổng chi phí dưới 2 triệu đồng mỗi tháng, cách VinUni tối đa 2 km và cần chỗ để xe.",
+    "action_type": "FINAL_ANSWER",
+    "thought": "Đã tổng hợp danh sách phòng từ Observation.",
+    "output": "Không tìm thấy phòng phù hợp. Bạn có thể tăng ngân sách, mở rộng khoảng cách, đổi loại phòng hoặc bỏ yêu cầu chỗ để xe.",
+    "latency_ms": 1106.52
+  },
+  {
+    "step": 1,
+    "query": "Đặt lịch xem ROOM-999 cho sinh viên SV2026001 vào 2026-09-21T09:00:00.",
+    "action_type": "TOOL_EXECUTION",
+    "thought": "Đã đủ thông tin để gọi Tool đặt lịch xem phòng.",
+    "tool_name": "schedule_room_viewing",
+    "arguments": {
+      "student_id": "SV2026001",
+      "property_id": "ROOM-999",
+      "viewing_datetime": "2026-09-21T09:00:00"
+    },
+    "observation": {
+      "status": "NOT_FOUND",
+      "message": "Không tìm thấy phòng có mã 'ROOM-999'."
+    },
+    "latency_ms": 938.99
+  },
+  {
+    "step": 2,
+    "query": "Đặt lịch xem ROOM-999 cho sinh viên SV2026001 vào 2026-09-21T09:00:00.",
+    "action_type": "FINAL_ANSWER",
+    "thought": "Gemini phản hồi trực tiếp bằng văn bản (không cần gọi công cụ).",
+    "output": "Không tìm thấy phòng có mã 'ROOM-999'. Vui lòng kiểm tra lại mã phòng.",
+    "latency_ms": 2303.76
   }
 ]

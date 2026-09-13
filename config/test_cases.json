@@ -1,0 +1,37 @@
+[
+  {
+    "id": "TC01",
+    "type": "direct_query",
+    "question": "Khi thuê phòng trọ, sinh viên nên dự trù những khoản chi phí nào ngoài tiền thuê?",
+    "expected_behavior": "Agent trả lời tư vấn chung bằng văn bản và không gọi Tool.",
+    "complexity": "Low"
+  },
+  {
+    "id": "TC02",
+    "type": "chatbot_vs_agent",
+    "question": "Tìm phòng riêng có tổng chi phí dưới 4 triệu đồng mỗi tháng, cách VinUni tối đa 7 km và cần chỗ để xe.",
+    "expected_behavior": "Chatbot Baseline phải nói không có dữ liệu phòng; ReAct Agent phải gọi 'search_student_housing', dùng Observation để trả danh sách phòng phù hợp và không bịa dữ liệu.",
+    "complexity": "Medium"
+  },
+  {
+    "id": "TC03",
+    "type": "room_viewing_booking",
+    "question": "Đặt lịch xem ROOM-002 cho sinh viên SV2026001 vào 2026-09-20T15:00:00.",
+    "expected_behavior": "Agent gọi 'schedule_room_viewing' với đúng student_id, property_id và viewing_datetime; sau đó trả mã booking từ Observation.",
+    "complexity": "Medium"
+  },
+  {
+    "id": "TC04",
+    "type": "no_match_reasoning",
+    "question": "Tìm studio có tổng chi phí dưới 2 triệu đồng mỗi tháng, cách VinUni tối đa 2 km và cần chỗ để xe.",
+    "expected_behavior": "Agent gọi 'search_student_housing', nhận danh sách rỗng và đề xuất điều chỉnh ngân sách, khoảng cách, loại phòng hoặc yêu cầu chỗ để xe.",
+    "complexity": "High"
+  },
+  {
+    "id": "TC05",
+    "type": "edge_case_handling",
+    "question": "Đặt lịch xem ROOM-999 cho sinh viên SV2026001 vào 2026-09-21T09:00:00.",
+    "expected_behavior": "Agent gọi 'schedule_room_viewing', nhận trạng thái NOT_FOUND và thông báo lịch sự rằng mã phòng không tồn tại, không tự tạo booking.",
+    "complexity": "Medium"
+  }
+]

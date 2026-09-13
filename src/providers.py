@@ -6,6 +6,7 @@ Hỗ trợ Native Tool Calling và chuyển đổi linh hoạt qua biến môi t
 import os
 import sys
 import json
+import re
 from typing import Dict, Any, List
 from dotenv import load_dotenv
 
@@ -32,32 +33,180 @@ class MockOfflineProvider(BaseLLMProvider):
         self.model_name = "Offline-Mock-Model-2026"
 
     def generate(self, prompt: str, system_prompt: str = "") -> str:
-        return f"[Mock Chatbot Response]: Xin chào! Tôi đã nhận được câu hỏi '{prompt}'. (Chế độ Chatbot không có Tool tra cứu dữ liệu thời gian thực)."
+        return (
+            "[Mock Chatbot Response]: Tôi có thể tư vấn cách chọn phòng và "
+            "lập ngân sách, nhưng Chatbot không có Tool để tra cứu phòng hoặc "
+            "đặt lịch xem phòng."
+        )
 
     def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
         prompt_lower = prompt.lower()
-        
-        # Mô phỏng nhận diện intent gọi Tool
-        if "sv2026001" in prompt_lower and "đặt lịch" in prompt_lower:
-            return {
-                "type": "tool_call",
-                "tool_name": "schedule_appointment",
-                "arguments": {"student_id": "SV2026001", "datetime_str": "14:00 15/09/2026", "advisor_name": "PGS.TS Nguyễn Văn A"},
-                "thought": "Người dùng yêu cầu đặt lịch hẹn tư vấn cho sinh viên SV2026001. Tôi sẽ gọi tool schedule_appointment."
-            }
-        elif "sv2026001" in prompt_lower or "tra cứu" in prompt_lower:
-            return {
-                "type": "tool_call",
-                "tool_name": "academic_query",
-                "arguments": {"student_id": "SV2026001"},
-                "thought": "Người dùng muốn tra cứu thông tin học vụ của sinh viên SV2026001. Tôi sẽ gọi tool academic_query."
-            }
-        else:
+
+        # Vòng sau Tool Call: đọc Observation và tạo Final Answer.
+        observation_match = re.search(
+            r"Observation từ MCP [Ss]erver\s*:\s*(.*)",
+            prompt,
+            flags=re.DOTALL
+        )
+        if observation_match:
+            try:
+                observation, _ = json.JSONDecoder().raw_decode(
+                    observation_match.group(1).lstrip()
+                )
+            except (json.JSONDecodeError, TypeError):
+                return {
+                    "type": "text",
+                    "content": "Không thể đọc kết quả từ MCP Server.",
+                    "thought": "Observation không có định dạng JSON hợp lệ."
+                }
+
+            if observation.get("status") != "SUCCESS":
+                return {
+                    "type": "text",
+                    "content": observation.get(
+                        "message",
+                        observation.get("error", "Công cụ không thể hoàn thành yêu cầu.")
+                    ),
+                    "thought": "Tool trả về trạng thái không thành công."
+                }
+
+            if "properties" in observation:
+                rooms = observation.get("properties", [])
+                if not rooms:
+                    content = (
+                        "Không tìm thấy phòng phù hợp. Bạn có thể tăng ngân sách, "
+                        "mở rộng khoảng cách, đổi loại phòng hoặc bỏ yêu cầu chỗ để xe."
+                    )
+                else:
+                    room_lines = []
+                    for room in rooms[:3]:
+                        parking = "có chỗ để xe" if room.get("has_parking") else "không có chỗ để xe"
+                        room_lines.append(
+                            f"- {room.get('property_id')}: {room.get('address')}; "
+                            f"{room.get('total_monthly_cost', 0):,.0f} VND/tháng; "
+                            f"cách VinUni {room.get('distance_km')} km; {parking}."
+                        )
+                    content = "Các phòng phù hợp nhất:\n" + "\n".join(room_lines)
+
+                return {
+                    "type": "text",
+                    "content": content,
+                    "thought": "Đã tổng hợp danh sách phòng từ Observation."
+                }
+
             return {
                 "type": "text",
-                "content": f"[Mock Agent Response]: Xin chào! Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
-                "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool."
+                "content": observation.get("message", "Yêu cầu đã được xử lý thành công."),
+                "thought": "Đã tổng hợp kết quả hành động từ Observation."
             }
+
+        # Intent đặt lịch xem phòng.
+        if "đặt lịch" in prompt_lower:
+            student_match = re.search(r"\bSV\d+\b", prompt, flags=re.IGNORECASE)
+            property_match = re.search(r"\bROOM-\d+\b", prompt, flags=re.IGNORECASE)
+            datetime_match = re.search(
+                r"\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?\b",
+                prompt
+            )
+
+            missing = []
+            if not student_match:
+                missing.append("mã sinh viên")
+            if not property_match:
+                missing.append("mã phòng")
+            if not datetime_match:
+                missing.append("ngày giờ theo định dạng YYYY-MM-DDTHH:MM:SS")
+
+            if missing:
+                return {
+                    "type": "text",
+                    "content": "Vui lòng cung cấp " + ", ".join(missing) + ".",
+                    "thought": "Yêu cầu đặt lịch còn thiếu tham số bắt buộc."
+                }
+
+            return {
+                "type": "tool_call",
+                "tool_name": "schedule_room_viewing",
+                "arguments": {
+                    "student_id": student_match.group(0).upper(),
+                    "property_id": property_match.group(0).upper(),
+                    "viewing_datetime": datetime_match.group(0)
+                },
+                "thought": "Đã đủ thông tin để gọi Tool đặt lịch xem phòng."
+            }
+
+        # Intent tìm phòng.
+        search_verbs = ("tìm", "tra cứu", "gợi ý", "lọc")
+        housing_terms = ("phòng", "studio", "căn hộ", "ở ghép")
+        wants_search = (
+            any(verb in prompt_lower for verb in search_verbs)
+            and any(term in prompt_lower for term in housing_terms)
+        )
+        if wants_search:
+            budget_match = re.search(
+                r"(\d+(?:[.,]\d+)?)\s*(?:triệu|tr)\b",
+                prompt_lower
+            )
+            distance_match = re.search(
+                r"(\d+(?:[.,]\d+)?)\s*km\b",
+                prompt_lower
+            )
+
+            room_type = None
+            room_type_keywords = {
+                "phòng riêng": "private_room",
+                "studio": "studio",
+                "căn hộ mini": "mini_apartment",
+                "ở ghép": "shared_room"
+            }
+            for keyword, value in room_type_keywords.items():
+                if keyword in prompt_lower:
+                    room_type = value
+                    break
+
+            missing = []
+            if not budget_match:
+                missing.append("ngân sách")
+            if not distance_match:
+                missing.append("khoảng cách tối đa")
+            if not room_type:
+                missing.append("loại phòng")
+
+            if missing:
+                return {
+                    "type": "text",
+                    "content": "Vui lòng cung cấp " + ", ".join(missing) + ".",
+                    "thought": "Yêu cầu tìm phòng còn thiếu tham số bắt buộc."
+                }
+
+            budget = float(budget_match.group(1).replace(",", ".")) * 1_000_000
+            max_distance = float(distance_match.group(1).replace(",", "."))
+            require_parking = (
+                "chỗ để xe" in prompt_lower
+                and "không cần chỗ để xe" not in prompt_lower
+            )
+
+            return {
+                "type": "tool_call",
+                "tool_name": "search_student_housing",
+                "arguments": {
+                    "max_monthly_budget": budget,
+                    "max_distance_km": max_distance,
+                    "room_type": room_type,
+                    "require_parking": require_parking
+                },
+                "thought": "Đã đủ tiêu chí để gọi Tool tìm phòng."
+            }
+
+        return {
+            "type": "text",
+            "content": (
+                "Ngoài tiền thuê, bạn nên dự trù tiền điện, nước, Internet, "
+                "phí dịch vụ, chi phí đi lại và tiền cọc. Hãy so sánh tổng "
+                "chi phí mỗi tháng thay vì chỉ nhìn giá thuê niêm yết."
+            ),
+            "thought": "Câu hỏi chung, không cần gọi Tool."
+        }
 
 
 class GeminiProvider(BaseLLMProvider):
